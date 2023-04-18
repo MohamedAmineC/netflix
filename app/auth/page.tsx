@@ -1,18 +1,33 @@
 "use client"
 import Input from "@/components/Input";
 import {useState,useCallback} from "react"
+import axios from "axios";
 
 type Variant = 'login' | 'register'
 
 const Auth = () => {
     const [email,setEmail] = useState<string>("");
-    const [username,setUsername] = useState<string>("");
+    const [name,setName] = useState<string>("");
     const [password,setPassword] = useState<string>("");
     const [variant,setVariant] = useState<Variant>("login");
 
     const toggleVariant = useCallback(() => {
         setVariant((currentVariant) => currentVariant === 'login' ? 'register' : 'login');
+        setEmail('');
+        setPassword('');
+        setName('');
     },[])
+
+    const register = useCallback(async () => {
+        try{
+            console.log({name,email,password})
+            await axios.post('/api/register',{
+                email,name,password,
+            },{withCredentials:true})
+        } catch(error){
+            console.log(error)
+        }
+    },[email,name,password])
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-no-repeat bg-center bg-cover bg-fixed">
@@ -30,8 +45,8 @@ const Auth = () => {
                         <Input 
                         id="username" 
                         label="Username" 
-                        value={username} 
-                        onChange={(e:any) => {setUsername(e.target.value)}}
+                        value={name} 
+                        onChange={(e:any) => {setName(e.target.value)}}
                         />)
                         }
                         <Input 
@@ -49,8 +64,8 @@ const Auth = () => {
                         onChange={(e:any) => {setPassword(e.target.value)}}
                         />
                     </div>
-                    <button className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
-                        {variant === 'login' ? 'login' : 'register'}
+                    <button onClick={register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
+                        {variant === 'login' ? 'Login' : 'Sign up'}
                     </button>
                     <p className="text-neutral-500 mt-12">
                         {variant === 'login' ? 'First time using Netflix' : 'Already have an account ?'}
